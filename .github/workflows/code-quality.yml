@@ -1,0 +1,47 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - projects/intermediate/03-ecommerce
+          - projects/intermediate/04-social-media
+          - projects/advanced/01-microservices-platform
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Checkstyle analysis
+        run: mvn checkstyle:check -f ${{ matrix.project }}/pom.xml
+        continue-on-error: true
+
+      - name: Generate test reports
+        run: mvn surefire-report:report -f ${{ matrix.project }}/pom.xml
+        if: always()
+
+      - name: Upload test reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-reports-${{ matrix.project }}
+          path: ${{ matrix.project }}/target/site/

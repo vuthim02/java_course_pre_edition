@@ -1,0 +1,594 @@
+openapi: 3.0.3
+info:
+  title: Multi-Tenant SaaS Platform API
+  version: 1.0.0
+  description: Enterprise multi-tenant SaaS platform with tenant management, per-tenant user management, and subscription management.
+  contact:
+    name: Java by BroCode
+    url: https://github.com/anomalyco/collection_of_Courses
+
+servers:
+  - url: http://localhost:8080
+    description: Development server
+
+tags:
+  - name: Tenants
+    description: Tenant lifecycle management
+  - name: Users
+    description: Per-tenant user management
+  - name: Subscriptions
+    description: Subscription and billing management
+
+paths:
+  /api/tenants:
+    post:
+      summary: Create a new tenant
+      operationId: createTenant
+      tags:
+        - Tenants
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tenant'
+      responses:
+        '201':
+          description: Tenant created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      summary: Get all tenants
+      operationId: getAllTenants
+      tags:
+        - Tenants
+      responses:
+        '200':
+          description: List of tenants
+          content:
+            application/json:
+              type: array
+              items:
+                $ref: '#/components/schemas/Tenant'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/tenants/{id}:
+    get:
+      summary: Get tenant by ID
+      operationId: getTenant
+      tags:
+        - Tenants
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 550e8400-e29b-41d4-a716-446655440000
+      responses:
+        '200':
+          description: Tenant found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      summary: Update a tenant
+      operationId: updateTenant
+      tags:
+        - Tenants
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tenant'
+      responses:
+        '200':
+          description: Tenant updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      summary: Delete a tenant
+      operationId: deleteTenant
+      tags:
+        - Tenants
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Tenant deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/tenants/{id}/activate:
+    post:
+      summary: Activate a tenant
+      operationId: activateTenant
+      tags:
+        - Tenants
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Tenant activated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/tenants/{id}/suspend:
+    post:
+      summary: Suspend a tenant
+      operationId: suspendTenant
+      tags:
+        - Tenants
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Tenant suspended
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/users:
+    post:
+      summary: Create a user within the current tenant context
+      operationId: createUser
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      summary: Get all users (optionally filtered by tenant context)
+      operationId: getUsers
+      tags:
+        - Users
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/users/{id}:
+    get:
+      summary: Get user by ID
+      operationId: getUser
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    put:
+      summary: Update a user
+      operationId: updateUser
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+    delete:
+      summary: Delete a user
+      operationId: deleteUser
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: User deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/subscriptions/plan:
+    get:
+      summary: Get plan configuration for current tenant
+      operationId: getPlanConfig
+      tags:
+        - Subscriptions
+      parameters:
+        - name: tier
+          in: query
+          schema:
+            type: string
+            enum:
+              - FREE
+              - STARTER
+              - PROFESSIONAL
+              - ENTERPRISE
+      responses:
+        '200':
+          description: Plan configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanConfig'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/subscriptions/upgrade:
+    post:
+      summary: Upgrade subscription plan
+      operationId: upgradePlan
+      tags:
+        - Subscriptions
+      parameters:
+        - name: currentTier
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: newTier
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Plan upgraded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlanConfig'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/billing/invoice:
+    post:
+      summary: Create an invoice for a tenant
+      operationId: createInvoice
+      tags:
+        - Subscriptions
+      parameters:
+        - name: tenantId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: tier
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Invoice created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /api/billing/pay/{invoiceId}:
+    post:
+      summary: Process payment for an invoice
+      operationId: processPayment
+      tags:
+        - Subscriptions
+      parameters:
+        - name: invoiceId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Payment processed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  invoiceId:
+                    type: string
+                    example: INV-2026-001
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+  schemas:
+    Tenant:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 550e8400-e29b-41d4-a716-446655440000
+        slug:
+          type: string
+          example: acme-corp
+        name:
+          type: string
+          example: Acme Corporation
+        tier:
+          type: string
+          enum:
+            - FREE
+            - STARTER
+            - PROFESSIONAL
+            - ENTERPRISE
+          example: PROFESSIONAL
+        status:
+          type: string
+          enum:
+            - PENDING
+            - ACTIVE
+            - SUSPENDED
+            - CANCELLED
+          example: ACTIVE
+        schemaName:
+          type: string
+          example: tenant_acme_corp
+        createdAt:
+          type: string
+          format: date-time
+          example: 2026-01-15T10:30:00
+        activatedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2026-01-15T12:00:00
+        suspendedAt:
+          type: string
+          format: date-time
+          nullable: true
+        maxUsers:
+          type: integer
+          example: 200
+        maxStorageGb:
+          type: integer
+          example: 200
+        featuresEnabled:
+          type: boolean
+          example: true
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 660e8400-e29b-41d4-a716-446655440001
+        tenant:
+          $ref: '#/components/schemas/Tenant'
+        email:
+          type: string
+          format: email
+          example: user@acme.com
+        fullName:
+          type: string
+          example: John Smith
+        role:
+          type: string
+          enum:
+            - ADMIN
+            - USER
+            - VIEWER
+          example: USER
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - LOCKED
+          example: ACTIVE
+        createdAt:
+          type: string
+          format: date-time
+          example: 2026-01-15T10:30:00
+        lastLoginAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: 2026-01-16T08:00:00
+
+    PlanConfig:
+      type: object
+      properties:
+        maxUsers:
+          type: integer
+          example: 200
+        maxStorageGb:
+          type: integer
+          example: 200
+        features:
+          type: array
+          items:
+            type: string
+          example:
+            - basic-reports
+            - advanced-reports
+            - api-access
+            - priority-support
+            - audit-logs
+            - sso
+
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+          example: INV-2026-001
+        tenantId:
+          type: string
+          example: acme-corp
+        amount:
+          type: number
+          format: double
+          example: 199.99
+        status:
+          type: string
+          example: PENDING
+        createdAt:
+          type: string
+          format: date-time
+          example: 2026-01-15T10:30:00
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        error:
+          type: string
+          example: Bad Request
+        message:
+          type: string
+          example: Tenant limit reached
+        path:
+          type: string
+          example: /api/tenants
+        timestamp:
+          type: string
+          format: date-time
+          example: 2026-01-15T10:30:00
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

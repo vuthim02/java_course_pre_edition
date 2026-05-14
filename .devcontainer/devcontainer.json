@@ -1,0 +1,39 @@
+{
+  "name": "Java by BroCode",
+  "image": "mcr.microsoft.com/devcontainers/java:21",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "21",
+      "installMaven": true,
+      "installGradle": true
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {},
+    "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/devcontainers/features/terraform:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "vmware.vscode-boot-dev-pack",
+        "redhat.vscode-yaml",
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "ms-azuretools.vscode-docker",
+        "eamodio.gitlens"
+      ],
+      "settings": {
+        "java.configuration.runtimes": [{"name": "JDK-21", "path": "/usr/local/graalvm"}],
+        "java.server.launchMode": "Standard"
+      }
+    }
+  },
+  "postCreateCommand": "mvn -version && java -version && echo 'Ready!'",
+  "forwardPorts": [8080, 8761, 8888, 5432, 6379],
+  "portsAttributes": {
+    "8080": {"label": "Spring Boot App", "onAutoForward": "notify"},
+    "8761": {"label": "Eureka Server", "onAutoForward": "notify"},
+    "8888": {"label": "Config Server", "onAutoForward": "notify"}
+  },
+  "remoteUser": "vscode"
+}

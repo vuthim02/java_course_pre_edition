@@ -1,0 +1,168 @@
+{
+  "info": {
+    "name": "API Gateway",
+    "description": "Postman collection for the API Gateway - route definitions, health check, rate limiting, and fallbacks",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Monitoring",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "List Routes",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/gateway/routes",
+              "host": ["{{baseUrl}}"],
+              "path": ["gateway", "routes"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Configuration",
+      "item": [
+        {
+          "name": "Get Rate Limit Config",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/gateway/rate-limit",
+              "host": ["{{baseUrl}}"],
+              "path": ["gateway", "rate-limit"]
+            }
+          }
+        },
+        {
+          "name": "Update Rate Limit Config",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"replenishRate\": 200,\n  \"burstCapacity\": 400,\n  \"windowSeconds\": 60\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/gateway/rate-limit",
+              "host": ["{{baseUrl}}"],
+              "path": ["gateway", "rate-limit"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fallbacks",
+      "item": [
+        {
+          "name": "User Service Fallback",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/fallback/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["fallback", "users"]
+            }
+          }
+        },
+        {
+          "name": "Order Service Fallback",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/fallback/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["fallback", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Product Service Fallback",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/fallback/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["fallback", "products"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Proxied Routes",
+      "item": [
+        {
+          "name": "Users API (proxied)",
+          "request": {
+            "method": "GET",
+            "description": "Requests to /api/users/** are proxied to user-service via the gateway",
+            "url": {
+              "raw": "{{baseUrl}}/api/users?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Orders API (proxied)",
+          "request": {
+            "method": "GET",
+            "description": "Requests to /api/orders/** are proxied to order-service via the gateway",
+            "url": {
+              "raw": "{{baseUrl}}/api/orders?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Products API (proxied)",
+          "request": {
+            "method": "GET",
+            "description": "Requests to /api/products/** are proxied to product-service via the gateway",
+            "url": {
+              "raw": "{{baseUrl}}/api/products?page=0&size=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

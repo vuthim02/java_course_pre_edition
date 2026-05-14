@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saas-app
+  namespace: tenant-system
+  labels:
+    app: saas-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: saas-app
+  template:
+    metadata:
+      labels:
+        app: saas-app
+    spec:
+      containers:
+        - name: app
+          image: saas-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: jdbc:postgresql://saas-postgres:5432/saas
+            - name: SPRING_DATASOURCE_USERNAME
+              value: saas
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: saas-db-secret
+                  key: password
+            - name: SPRING_REDIS_HOST
+              value: saas-redis
+            - name: SPRING_REDIS_PORT
+              value: "6379"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saas-postgres
+  namespace: tenant-system
+  labels:
+    app: saas-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: saas-postgres
+  template:
+    metadata:
+      labels:
+        app: saas-postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: saas
+            - name: POSTGRES_USER
+              value: saas
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: saas-db-secret
+                  key: password
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saas-redis
+  namespace: tenant-system
+  labels:
+    app: saas-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: saas-redis
+  template:
+    metadata:
+      labels:
+        app: saas-redis
+    spec:
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          ports:
+            - containerPort: 6379

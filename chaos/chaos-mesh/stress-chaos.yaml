@@ -1,0 +1,59 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-user-service
+  namespace: default
+spec:
+  mode: one
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      app: user-service
+  stressors:
+    cpu:
+      workers: 4
+      load: 80
+  duration: "120s"
+  scheduler:
+    cron: "@every 240s"
+---
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: memory-stress-order-service
+  namespace: default
+spec:
+  mode: one
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      app: order-service
+  stressors:
+    memory:
+      workers: 2
+      size: "512MB"
+  duration: "60s"
+  scheduler:
+    cron: "@every 180s"
+---
+apiVersion: chaos-mesh.org/v1alpha1
+kind: StressChaos
+metadata:
+  name: cpu-stress-api-gateway
+  namespace: default
+spec:
+  mode: one
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      app: api-gateway
+  stressors:
+    cpu:
+      workers: 2
+      load: 60
+  duration: "90s"
+  scheduler:
+    cron: "@every 180s"

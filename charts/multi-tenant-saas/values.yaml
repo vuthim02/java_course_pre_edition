@@ -1,0 +1,94 @@
+global:
+  namespace: tenant-system
+  imagePullSecrets: []
+  tenantAware: true
+  tenantDiscriminatorColumn: tenant_id
+
+app:
+  name: saas-app
+  replicaCount: 3
+  image:
+    repository: saas/app
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 8080
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 1Gi
+  env:
+    - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+      value: update
+    - name: SPRING_JPA_PROPERTIES_HIBERNATE_TENANT_IDENTIFIER_RESOLVER
+      value: com.saas.multitenant.resolver.TenantIdentifierResolver
+  livenessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 15
+  readinessProbe:
+    httpGet:
+      path: /actuator/health
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  hpa:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 15
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+
+postgres:
+  enabled: true
+  image:
+    repository: postgres
+    tag: 16-alpine
+    pullPolicy: IfNotPresent
+  service:
+    port: 5432
+  persistence:
+    size: 20Gi
+    storageClass: ""
+  database:
+    name: saas
+    user: saas
+    password: saas
+
+redis:
+  enabled: true
+  image:
+    repository: redis
+    tag: 7-alpine
+    pullPolicy: IfNotPresent
+  service:
+    port: 6379
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: saas.local
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            serviceName: saas-app
+            servicePort: 8080
+  tls: []
+
+tenants:
+  - id: tenant-a
+    db: saas_tenant_a
+  - id: tenant-b
+    db: saas_tenant_b
+  - id: tenant-c
+    db: saas_tenant_c

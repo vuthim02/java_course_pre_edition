@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "microservices-platform.labels" . | nindent 4 }}
+data:
+  postgres-url: jdbc:postgresql://{{ .Release.Name }}-postgres:{{ .Values.postgres.service.port }}/{{ .Values.postgres.database.name }}
+  redis-host: {{ .Release.Name }}-redis
+  redis-port: {{ .Values.redis.service.port | quote }}
+  kafka-bootstrap-servers: {{ .Release.Name }}-kafka:{{ .Values.kafka.service.port }}
+  eureka-url: http://{{ .Release.Name }}-service-registry:{{ .Values.services.service-registry.service.port }}/eureka
+  config-server-uri: http://{{ .Release.Name }}-config-server:{{ .Values.services.config-server.service.port }}

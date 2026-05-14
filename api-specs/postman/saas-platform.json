@@ -1,0 +1,204 @@
+{
+  "info": {
+    "name": "SaaS Platform",
+    "description": "Postman collection for the SaaS Platform project",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "tenantId",
+      "value": "acme-corp",
+      "type": "string"
+    },
+    {
+      "key": "invoiceNumber",
+      "value": "INV-2026-001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Tenants",
+      "item": [
+        {
+          "name": "List Tenants",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tenants",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tenants"]
+            }
+          }
+        },
+        {
+          "name": "Create Tenant",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tenantId\": \"acme-corp\",\n  \"name\": \"Acme Corporation\",\n  \"plan\": \"PRO\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/tenants",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tenants"]
+            }
+          }
+        },
+        {
+          "name": "Get Tenant",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/tenants/{{tenantId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tenants", "{{tenantId}}"]
+            }
+          }
+        },
+        {
+          "name": "Activate Tenant",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/tenants/{{tenantId}}/activate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tenants", "{{tenantId}}", "activate"]
+            }
+          }
+        },
+        {
+          "name": "Suspend Tenant",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/tenants/{{tenantId}}/suspend",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tenants", "{{tenantId}}", "suspend"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Tenant",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/tenants/{{tenantId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tenants", "{{tenantId}}", "cancel"]
+            }
+          }
+        },
+        {
+          "name": "Change Plan",
+          "request": {
+            "method": "PUT",
+            "url": {
+              "raw": "{{baseUrl}}/api/tenants/{{tenantId}}/plan?plan=ENTERPRISE",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tenants", "{{tenantId}}", "plan"],
+              "query": [
+                { "key": "plan", "value": "ENTERPRISE" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Usage",
+      "item": [
+        {
+          "name": "Record Usage",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/usage?tenantId={{tenantId}}&metric=api_requests&value=150",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usage"],
+              "query": [
+                { "key": "tenantId", "value": "{{tenantId}}" },
+                { "key": "metric", "value": "api_requests" },
+                { "key": "value", "value": "150" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Usage Records",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/usage?tenantId={{tenantId}}&metric=api_requests&start=2026-01-01T00:00:00&end=2026-01-31T23:59:59",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usage"],
+              "query": [
+                { "key": "tenantId", "value": "{{tenantId}}" },
+                { "key": "metric", "value": "api_requests" },
+                { "key": "start", "value": "2026-01-01T00:00:00" },
+                { "key": "end", "value": "2026-01-31T23:59:59" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Total Usage",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/usage/total?tenantId={{tenantId}}&metric=api_requests&start=2026-01-01T00:00:00&end=2026-01-31T23:59:59",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "usage", "total"],
+              "query": [
+                { "key": "tenantId", "value": "{{tenantId}}" },
+                { "key": "metric", "value": "api_requests" },
+                { "key": "start", "value": "2026-01-01T00:00:00" },
+                { "key": "end", "value": "2026-01-31T23:59:59" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Billing",
+      "item": [
+        {
+          "name": "Generate Invoice",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/billing/invoice?tenantId={{tenantId}}&plan=PRO",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "billing", "invoice"],
+              "query": [
+                { "key": "tenantId", "value": "{{tenantId}}" },
+                { "key": "plan", "value": "PRO" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Pay Invoice",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/billing/pay/{{invoiceNumber}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "billing", "pay", "{{invoiceNumber}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

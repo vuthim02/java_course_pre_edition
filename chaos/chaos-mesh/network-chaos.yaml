@@ -1,0 +1,71 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-delay-user-to-order
+  namespace: default
+spec:
+  action: delay
+  mode: all
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      app: user-service
+  delay:
+    latency: "2000ms"
+    correlation: "50"
+    jitter: "500ms"
+  duration: "60s"
+  scheduler:
+    cron: "@every 120s"
+  target:
+    mode: all
+    selector:
+      namespaces:
+        - default
+      labelSelectors:
+        app: order-service
+---
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: network-partition-product-service
+  namespace: default
+spec:
+  action: partition
+  mode: all
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      app: product-service
+  duration: "30s"
+  scheduler:
+    cron: "@every 180s"
+  target:
+    mode: all
+    selector:
+      namespaces:
+        - default
+      labelSelectors:
+        app: order-service
+---
+apiVersion: chaos-mesh.org/v1alpha1
+kind: NetworkChaos
+metadata:
+  name: packet-loss-api-gateway
+  namespace: default
+spec:
+  action: loss
+  mode: all
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      app: api-gateway
+  loss:
+    loss: "25"
+    correlation: "50"
+  duration: "30s"
+  scheduler:
+    cron: "@every 90s"

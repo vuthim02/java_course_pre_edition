@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ai-backend
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:sk-placeholder}
+      chat:
+        options:
+          model: gpt-4
+          temperature: 0.7
+  datasource:
+    url: jdbc:h2:mem:aidb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+app:
+  moderation:
+    enabled: true
+    thresholds:
+      hate: 0.7
+      sexual: 0.7
+      violence: 0.7
+      self-harm: 0.5
+  vector:
+    dimension: 1536

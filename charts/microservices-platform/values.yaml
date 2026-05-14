@@ -1,0 +1,238 @@
+global:
+  namespace: microservices-platform
+  imagePullSecrets: []
+
+services:
+  service-registry:
+    enabled: true
+    replicaCount: 1
+    image:
+      repository: microservices/service-registry
+      tag: latest
+      pullPolicy: IfNotPresent
+    service:
+      type: ClusterIP
+      port: 8761
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+    env:
+      - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+        value: "true"
+    livenessProbe:
+      httpGet:
+        path: /actuator/health
+        port: 8761
+      initialDelaySeconds: 30
+      periodSeconds: 15
+    readinessProbe:
+      httpGet:
+        path: /actuator/health
+        port: 8761
+      initialDelaySeconds: 20
+      periodSeconds: 10
+
+  config-server:
+    enabled: true
+    replicaCount: 1
+    image:
+      repository: microservices/config-server
+      tag: latest
+      pullPolicy: IfNotPresent
+    service:
+      type: ClusterIP
+      port: 8888
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+    env:
+      - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://service-registry:8761/eureka"
+    livenessProbe:
+      httpGet:
+        path: /actuator/health
+        port: 8888
+      initialDelaySeconds: 30
+      periodSeconds: 15
+
+  api-gateway:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: microservices/api-gateway
+      tag: latest
+      pullPolicy: IfNotPresent
+    service:
+      type: ClusterIP
+      port: 8080
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        cpu: 1
+        memory: 2Gi
+    env:
+      - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://service-registry:8761/eureka"
+      - name: SPRING_CLOUD_CONFIG_URI
+        value: "http://config-server:8888"
+    livenessProbe:
+      httpGet:
+        path: /actuator/health
+        port: 8080
+      initialDelaySeconds: 30
+      periodSeconds: 15
+    hpa:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 70
+      targetMemoryUtilizationPercentage: 80
+
+  user-service:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: microservices/user-service
+      tag: latest
+      pullPolicy: IfNotPresent
+    service:
+      type: ClusterIP
+      port: 8081
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: 1
+        memory: 1Gi
+    env:
+      - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://service-registry:8761/eureka"
+      - name: SPRING_CLOUD_CONFIG_URI
+        value: "http://config-server:8888"
+    hpa:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 8
+      targetCPUUtilizationPercentage: 70
+
+  order-service:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: microservices/order-service
+      tag: latest
+      pullPolicy: IfNotPresent
+    service:
+      type: ClusterIP
+      port: 8082
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: 1
+        memory: 1Gi
+    env:
+      - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://service-registry:8761/eureka"
+      - name: SPRING_CLOUD_CONFIG_URI
+        value: "http://config-server:8888"
+    hpa:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 8
+      targetCPUUtilizationPercentage: 70
+
+  product-service:
+    enabled: true
+    replicaCount: 2
+    image:
+      repository: microservices/product-service
+      tag: latest
+      pullPolicy: IfNotPresent
+    service:
+      type: ClusterIP
+      port: 8083
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+      limits:
+        cpu: 1
+        memory: 1Gi
+    env:
+      - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+        value: "http://service-registry:8761/eureka"
+      - name: SPRING_CLOUD_CONFIG_URI
+        value: "http://config-server:8888"
+    hpa:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 8
+      targetCPUUtilizationPercentage: 70
+
+postgres:
+  enabled: true
+  image:
+    repository: postgres
+    tag: 16-alpine
+    pullPolicy: IfNotPresent
+  service:
+    port: 5432
+  persistence:
+    size: 10Gi
+    storageClass: ""
+  database:
+    name: platform
+    user: platform
+    password: platform
+
+redis:
+  enabled: true
+  image:
+    repository: redis
+    tag: 7-alpine
+    pullPolicy: IfNotPresent
+  service:
+    port: 6379
+
+kafka:
+  enabled: true
+  image:
+    repository: confluentinc/cp-kafka
+    tag: 7.6.0
+  zookeeper:
+    image:
+      repository: confluentinc/cp-zookeeper
+      tag: 7.6.0
+    service:
+      port: 2181
+  service:
+    port: 9092
+  replicaCount: 1
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: microservices.local
+      paths:
+        - path: /
+          pathType: Prefix
+          service:
+            name: api-gateway
+            port: 8080
+  tls: []

@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - projects/beginner/01-calculator
+          - projects/beginner/02-banking-system
+          - projects/beginner/03-file-manager
+          - projects/beginner/04-chat-application
+          - projects/beginner/05-inventory-system
+          - projects/intermediate/01-rest-api
+          - projects/intermediate/02-auth-system
+          - projects/intermediate/03-ecommerce
+          - projects/intermediate/04-social-media
+          - projects/intermediate/05-real-time-chat
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build and test
+        run: mvn clean verify -f ${{ matrix.project }}/pom.xml

@@ -1,0 +1,122 @@
+{
+  "info": {
+    "name": "AI Backend",
+    "description": "Postman collection for the AI Backend project",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "AI",
+      "item": [
+        {
+          "name": "Chat Completion",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"What is the capital of France?\",\n  \"systemPrompt\": \"You are a helpful assistant.\",\n  \"temperature\": 0.7\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/chat/completions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "chat", "completions"]
+            }
+          }
+        },
+        {
+          "name": "Stream Chat (SSE)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Accept", "value": "text/event-stream" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"Tell me a story\",\n  \"systemPrompt\": \"You are a storyteller.\",\n  \"temperature\": 0.8\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/chat/stream",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "chat", "stream"]
+            }
+          }
+        },
+        {
+          "name": "Summarization",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Long article text to be summarized goes here...\",\n  \"maxLength\": 200,\n  \"style\": \"concise\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/summarization",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "summarization"]
+            }
+          }
+        },
+        {
+          "name": "Moderation",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Content to moderate\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/moderation",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "moderation"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Ingest Document",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "value": "",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/documents/ingest",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "documents", "ingest"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

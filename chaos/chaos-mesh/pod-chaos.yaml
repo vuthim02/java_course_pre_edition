@@ -1,0 +1,52 @@
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-delete-user-service
+  namespace: default
+spec:
+  action: pod-kill
+  mode: one
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      app: user-service
+  duration: "60s"
+  scheduler:
+    cron: "@every 120s"
+---
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: pod-failure-order-service
+  namespace: default
+spec:
+  action: pod-failure
+  mode: one
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      app: order-service
+  duration: "30s"
+  scheduler:
+    cron: "@every 90s"
+---
+apiVersion: chaos-mesh.org/v1alpha1
+kind: PodChaos
+metadata:
+  name: container-kill-api-gateway
+  namespace: default
+spec:
+  action: container-kill
+  mode: one
+  selector:
+    namespaces:
+      - default
+    labelSelectors:
+      app: api-gateway
+  duration: "30s"
+  scheduler:
+    cron: "@every 60s"
+  containerNames:
+    - api-gateway

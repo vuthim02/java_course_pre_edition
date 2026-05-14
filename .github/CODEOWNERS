@@ -1,0 +1,14 @@
+# Module owners
+* @brocode
+
+# CI/CD workflows
+/.github/ @brocode
+
+# Dockerfiles
+**/Dockerfile @brocode
+
+# Kubernetes manifests
+**/k8s/ @brocode
+
+# Docker Compose
+**/docker-compose.yml @brocode

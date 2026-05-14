@@ -1,0 +1,30 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: saas-platform
+  datasource:
+    url: jdbc:h2:mem:saas_master
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  flyway:
+    enabled: false
+
+app:
+  tenants:
+    datasources:
+      jdbc:h2:mem:tenant_{name}
+  rate-limit:
+    default: 100
+    FREE: 50
+    PRO: 500
+    ENTERPRISE: 5000

@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: saas-app-service
+  namespace: tenant-system
+  labels:
+    app: saas-app
+spec:
+  type: ClusterIP
+  selector:
+    app: saas-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: saas-postgres
+  namespace: tenant-system
+  labels:
+    app: saas-postgres
+spec:
+  type: ClusterIP
+  selector:
+    app: saas-postgres
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: saas-redis
+  namespace: tenant-system
+  labels:
+    app: saas-redis
+spec:
+  type: ClusterIP
+  selector:
+    app: saas-redis
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379

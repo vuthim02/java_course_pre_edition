@@ -1,0 +1,7 @@
+version: "3.9"
+
+include:
+  - projects/intermediate/03-ecommerce/docker-compose.yml
+  - projects/intermediate/04-social-media/docker-compose.yml
+  - projects/advanced/01-microservices-platform/docker-compose.yml
+  - projects/elite/02-multi-tenant-saas/docker-compose.yml

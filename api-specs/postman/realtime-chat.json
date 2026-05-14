@@ -1,0 +1,100 @@
+{
+  "info": {
+    "name": "Real-time Chat",
+    "description": "Postman collection for the Real-time Chat project - REST endpoints and STOMP WebSocket config",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "roomId",
+      "value": "general",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Rooms",
+      "item": [
+        {
+          "name": "Get All Rooms",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"]
+            }
+          }
+        },
+        {
+          "name": "Create Room",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms?roomId=general&name=General%20Chat",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms"],
+              "query": [
+                { "key": "roomId", "value": "general" },
+                { "key": "name", "value": "General Chat" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "item": [
+        {
+          "name": "Get Room Messages",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms/{{roomId}}/messages?page=0&size=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms", "{{roomId}}", "messages"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "50" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Chat History",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/rooms/{{roomId}}/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "rooms", "{{roomId}}", "history"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "WebSocket (STOMP)",
+      "item": [
+        {
+          "name": "WebSocket Config",
+          "request": {
+            "method": "GET",
+            "description": "STOMP WebSocket endpoint: /ws\nApplication prefix: /app\nBroker: /topic, /queue\n\nSend to: /app/chat.send\nSubscribe: /topic/room/{roomId}\n\nExample STOMP frame:\n>>> SEND\ndestination:/app/chat.send\ncontent-type:application/json\n\n{\"roomId\":\"general\",\"sender\":\"john\",\"content\":\"Hello!\",\"type\":\"CHAT\"}",
+            "url": {
+              "raw": "{{baseUrl}}/ws",
+              "host": ["{{baseUrl}}"],
+              "path": ["ws"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

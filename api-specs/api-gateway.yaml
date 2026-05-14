@@ -1,0 +1,256 @@
+openapi: 3.0.3
+info:
+  title: API Gateway
+  version: 1.0.0
+  description: Spring Cloud Gateway configuration with route definitions, rate limiting, circuit breaker, and health monitoring.
+  contact:
+    name: Java by BroCode
+    url: https://github.com/anomalyco/collection_of_Courses
+
+servers:
+  - url: http://localhost:8080
+    description: Gateway server
+
+paths:
+  /api/users/**:
+    x-route:
+      serviceId: user-service
+      uri: lb://user-service
+      filters:
+        - circuitBreaker
+        - rateLimiter
+      fallbackUri: forward:/fallback/users
+    x-rateLimit:
+      replenishRate: 100
+      burstCapacity: 200
+      windowSeconds: 60
+
+  /api/orders/**:
+    x-route:
+      serviceId: order-service
+      uri: lb://order-service
+      filters:
+        - circuitBreaker
+      fallbackUri: forward:/fallback/orders
+
+  /api/products/**:
+    x-route:
+      serviceId: product-service
+      uri: lb://product-service
+      filters:
+        - circuitBreaker
+      fallbackUri: forward:/fallback/products
+
+  /health:
+    get:
+      summary: Gateway health check
+      operationId: healthCheck
+      tags:
+        - Monitoring
+      responses:
+        '200':
+          description: Gateway is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: Gateway is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+
+  /fallback/users:
+    get:
+      summary: User service fallback
+      operationId: userServiceFallback
+      tags:
+        - Fallback
+      responses:
+        '200':
+          description: Fallback response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FallbackResponse'
+
+  /fallback/orders:
+    get:
+      summary: Order service fallback
+      operationId: orderServiceFallback
+      tags:
+        - Fallback
+      responses:
+        '200':
+          description: Fallback response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FallbackResponse'
+
+  /fallback/products:
+    get:
+      summary: Product service fallback
+      operationId: productServiceFallback
+      tags:
+        - Fallback
+      responses:
+        '200':
+          description: Fallback response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FallbackResponse'
+
+  /gateway/routes:
+    get:
+      summary: List all gateway routes
+      operationId: listRoutes
+      tags:
+        - Monitoring
+      responses:
+        '200':
+          description: Route definitions
+          content:
+            application/json:
+              type: array
+              items:
+                $ref: '#/components/schemas/RouteDefinition'
+
+  /gateway/rate-limit:
+    get:
+      summary: Get rate limit configuration
+      operationId: getRateLimitConfig
+      tags:
+        - Configuration
+      responses:
+        '200':
+          description: Rate limit config
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitConfig'
+
+  /gateway/rate-limit:
+    put:
+      summary: Update rate limit configuration
+      operationId: updateRateLimitConfig
+      tags:
+        - Configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RateLimitConfig'
+      responses:
+        '200':
+          description: Configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitConfig'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    RouteDefinition:
+      type: object
+      properties:
+        id:
+          type: string
+          example: user-service
+        uri:
+          type: string
+          example: lb://user-service
+        predicates:
+          type: array
+          items:
+            type: string
+          example:
+            - Path=/api/users/**
+        filters:
+          type: array
+          items:
+            type: string
+          example:
+            - CircuitBreaker=userServiceCircuitBreaker,forward:/fallback/users
+            - RequestRateLimiter=redisRateLimiter
+        order:
+          type: integer
+          example: 0
+
+    RateLimitConfig:
+      type: object
+      properties:
+        replenishRate:
+          type: integer
+          description: Maximum number of requests per window
+          example: 100
+        burstCapacity:
+          type: integer
+          description: Maximum burst capacity
+          example: 200
+        windowSeconds:
+          type: integer
+          description: Time window in seconds
+          example: 60
+
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: UP
+        services:
+          type: object
+          properties:
+            user-service:
+              type: string
+              example: UP
+            order-service:
+              type: string
+              example: UP
+            product-service:
+              type: string
+              example: UP
+        uptime:
+          type: integer
+          example: 3600
+
+    FallbackResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Service temporarily unavailable. Please try again later.
+        timestamp:
+          type: string
+          format: date-time
+          example: 2026-01-15T10:30:00
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 429
+        error:
+          type: string
+          example: Too Many Requests
+        message:
+          type: string
+          example: Rate limit exceeded. Try again in 60 seconds.
+        path:
+          type: string
+          example: /api/users
+        timestamp:
+          type: string
+          format: date-time
+          example: 2026-01-15T10:30:00

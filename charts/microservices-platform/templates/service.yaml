@@ -1,0 +1,22 @@
+{{- range $name, $service := .Values.services }}
+{{- if $service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Release.Name }}-{{ $name }}
+  namespace: {{ $.Values.global.namespace }}
+  labels:
+    app: {{ $name }}
+    {{- include "microservices-platform.labels" $ | nindent 4 }}
+spec:
+  type: {{ $service.service.type }}
+  selector:
+    app: {{ $name }}
+    {{- include "microservices-platform.selectorLabels" $ | nindent 4 }}
+  ports:
+    - protocol: TCP
+      port: {{ $service.service.port }}
+      targetPort: {{ $service.service.port }}
+---
+{{- end }}
+{{- end }}

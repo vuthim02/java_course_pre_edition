@@ -1,0 +1,25 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:authdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+jwt:
+  access-secret: dGhpcyBpcyBhIHZlcnkgbG9uZyBhbmQgc2VjdXJlIGFjY2VzcyBzZWNyZXQga2V5IGZvciB0ZXN0aW5nIHB1cnBvc2Vz
+  refresh-secret: dGhpcyBpcyBhbm90aGVyIHZlcnkgbG9uZyBhbmQgc2VjdXJlIHJlZnJlc2ggc2VjcmV0IGtleSBmb3IgdGVzdGluZw==
+  access-expiration: 3600000
+  refresh-expiration: 604800000

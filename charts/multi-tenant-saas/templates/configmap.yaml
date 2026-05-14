@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "multi-tenant-saas.labels" . | nindent 4 }}
+data:
+  postgres-url: jdbc:postgresql://{{ .Release.Name }}-postgres:{{ .Values.postgres.service.port }}/{{ .Values.postgres.database.name }}
+  redis-host: {{ .Release.Name }}-redis
+  redis-port: {{ .Values.redis.service.port | quote }}
+  tenant-column: {{ .Values.global.tenantDiscriminatorColumn | quote }}
