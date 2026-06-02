@@ -1,0 +1,674 @@
+# Java Q&A Guide: Starter to Expert
+
+---
+
+## 🟢 STARTER / BEGINNER LEVEL
+
+### Q1: What is Java?
+**A:** Java is a high-level, object-oriented programming language developed by Sun Microsystems (now Oracle). It follows the principle of "Write Once, Run Anywhere" (WORA) via the Java Virtual Machine (JVM).
+
+### Q2: What is JVM, JRE, and JDK?
+**A:**
+- **JVM (Java Virtual Machine):** Runs compiled Java bytecode. Platform-dependent.
+- **JRE (Java Runtime Environment):** JVM + core libraries. Needed to run Java programs.
+- **JDK (Java Development Kit):** JRE + development tools (compiler `javac`, debugger, etc.). Needed to develop Java programs.
+
+### Q3: What are primitive data types in Java?
+**A:**
+| Type    | Size   | Example         |
+|---------|--------|-----------------|
+| byte    | 8-bit  | `byte b = 100`  |
+| short   | 16-bit | `short s = 1000`|
+| int     | 32-bit | `int i = 100000`|
+| long    | 64-bit | `long l = 100L` |
+| float   | 32-bit | `float f = 3.14f`|
+| double  | 64-bit | `double d = 3.14`|
+| char    | 16-bit | `char c = 'A'`  |
+| boolean | 1-bit  | `boolean b = true`|
+
+### Q4: What is the difference between `==` and `.equals()`?
+**A:**
+- `==` checks **reference equality** (are they the same object in memory?).
+- `.equals()` checks **value equality** (do they have the same content?). Custom classes should override `.equals()`.
+
+### Q5: What is the difference between `public`, `private`, `protected`, and default access modifiers?
+**A:**
+| Modifier  | Class | Package | Subclass | World |
+|-----------|-------|---------|----------|-------|
+| public    | ✅    | ✅      | ✅       | ✅    |
+| protected | ✅    | ✅      | ✅       | ❌    |
+| default   | ✅    | ✅      | ❌       | ❌    |
+| private   | ✅    | ❌      | ❌       | ❌    |
+
+### Q6: What is a constructor?
+**A:** A special method that initializes objects. It has the same name as the class, no return type, and is called when `new` is used.
+
+```java
+public class Car {
+    String model;
+    Car(String model) { this.model = model; }
+}
+```
+
+### Q7: What is method overloading vs overriding?
+**A:**
+- **Overloading:** Same method name, different parameters (compile-time polymorphism).
+- **Overriding:** Subclass redefines a parent class method (runtime polymorphism).
+
+### Q8: What is inheritance?
+**A:** A mechanism where one class (child/subclass) acquires properties and behaviors of another class (parent/superclass) using the `extends` keyword. Java supports single inheritance but multiple inheritance through interfaces.
+
+### Q9: What is the difference between an abstract class and an interface?
+**A:**
+| Feature         | Abstract Class                | Interface                        |
+|-----------------|-------------------------------|----------------------------------|
+| Methods         | Can have abstract + concrete  | Abstract (default/static allowed)|
+| Variables       | Any variables                 | `public static final` constants  |
+| Constructor     | Yes                           | No                               |
+| Multiple inheritance | No                        | Yes                              |
+| Keyword         | `abstract class`              | `interface`                      |
+
+### Q10: What is a `static` keyword?
+**A:** Belongs to the class, not instances. `static` variables/methods are shared across all instances. Called via `ClassName.method()`.
+
+### Q11: What is `final` in Java?
+**A:**
+- `final` class → cannot be extended
+- `final` method → cannot be overridden
+- `final` variable → cannot be reassigned (constant)
+
+### Q12: What is a `String` and why is it immutable?
+**A:** `String` is a sequence of characters. It's **immutable** for:
+1. Thread safety
+2. String pool optimization
+3. Security (e.g., class names, database URLs)
+4. Caching hashcode
+
+---
+
+## 🟡 INTERMEDIATE LEVEL
+
+### Q13: What is the Collections Framework?
+**A:** A unified architecture for storing and manipulating groups of objects. Key interfaces:
+- **List** (ArrayList, LinkedList, Vector) – ordered, allows duplicates
+- **Set** (HashSet, LinkedHashSet, TreeSet) – no duplicates
+- **Queue** (PriorityQueue, LinkedList) – FIFO processing
+- **Map** (HashMap, LinkedHashMap, TreeMap, ConcurrentHashMap) – key-value pairs
+
+### Q14: Difference between ArrayList and LinkedList?
+**A:**
+| Feature        | ArrayList                     | LinkedList                    |
+|----------------|-------------------------------|-------------------------------|
+| Internal       | Dynamic array                 | Doubly-linked list            |
+| Get by index   | O(1)                          | O(n)                          |
+| Insert/delete  | O(n) (shifting)               | O(1) (if node known)           |
+| Memory         | Less overhead                 | More (node pointers)          |
+
+### Q15: Difference between HashMap and ConcurrentHashMap?
+**A:**
+- **HashMap:** Not thread-safe. Allows one `null` key.
+- **ConcurrentHashMap:** Thread-safe. Uses locking on segments/buckets. Does not allow `null` keys/values. Better performance than `Hashtable`.
+
+### Q16: What is the difference between `HashSet` and `TreeSet`?
+**A:**
+- **HashSet:** Uses `hashCode()`/`equals()`. O(1) operations. No ordering.
+- **TreeSet:** Uses `Comparable`/`Comparator`. O(log n) operations. Sorted order.
+
+### Q17: How does `HashMap` work internally?
+**A:**
+- Uses an array of `Node<K,V>` (buckets).
+- `hashCode()` determines bucket index.
+- Collisions handled via linked list (or tree if >8 nodes).
+- On collision, `equals()` checks key equality.
+- Default load factor 0.75 — rehashes when 75% full.
+
+### Q18: What is the difference between `throw` and `throws`?
+**A:**
+- `throw` → explicitly throws an exception (`throw new Exception();`)
+- `throws` → declares exceptions a method can throw (`void m() throws IOException {}`)
+
+### Q19: What are checked vs unchecked exceptions?
+**A:**
+- **Checked:** Compile-time check. Must be caught or declared. e.g., `IOException`, `SQLException`.
+- **Unchecked:** RuntimeExceptions. Not checked at compile time. e.g., `NullPointerException`, `ArithmeticException`.
+
+### Q20: What is `try-with-resources`?
+**A:** Automatic resource management. Resources implementing `AutoCloseable` are automatically closed.
+
+```java
+try (BufferedReader br = new BufferedReader(new FileReader("file.txt"))) {
+    System.out.println(br.readLine());
+}
+```
+
+### Q21: What are Generics?
+**A:** Type safety at compile time. Allows parameterized types.
+
+```java
+List<String> list = new ArrayList<>(); // only Strings allowed
+public <T> T echo(T item) { return item; }
+```
+
+### Q22: What is the difference between `? extends T` and `? super T`?
+**A:**
+- `? extends T` – upper bounded wildcard. Producer. Can read T values.
+- `? super T` – lower bounded wildcard. Consumer. Can write T values.
+
+(PECS: Producer Extends, Consumer Super)
+
+### Q23: What are Lambda Expressions?
+**A:** Anonymous functions introduced in Java 8.
+
+```java
+// Before
+button.addActionListener(new ActionListener() {
+    public void actionPerformed(ActionEvent e) { System.out.println("click"); }
+});
+// After
+button.addActionListener(e -> System.out.println("click"));
+```
+
+### Q24: What is the Stream API?
+**A:** Functional-style operations on sequences of elements.
+
+```java
+list.stream()
+    .filter(s -> s.startsWith("A"))
+    .map(String::toUpperCase)
+    .sorted()
+    .collect(Collectors.toList());
+```
+
+### Q25: What are `Optional` and its purpose?
+**A:** A container to avoid `NullPointerException`. Forces handling of "maybe null" values.
+
+```java
+Optional<String> name = Optional.ofNullable(getName());
+String result = name.orElse("default");
+```
+
+### Q26: Difference between `Runnable` and `Callable`?
+**A:**
+| Feature     | Runnable          | Callable            |
+|-------------|-------------------|---------------------|
+| Return      | void              | Returns value       |
+| Exception   | Cannot throw      | Can throw checked   |
+| Method      | `run()`           | `call()`            |
+
+### Q27: What is the `synchronized` keyword?
+**A:** Ensures only one thread can access a method/block at a time. Can be applied to methods or as a block on a specific object/monitor.
+
+### Q28: What is `volatile`?
+**A:** Ensures visibility of changes across threads. Reads/writes go directly to main memory, bypassing CPU cache. Does NOT guarantee atomicity.
+
+### Q29: What is the difference between `StringBuilder` and `StringBuffer`?
+**A:**
+- `StringBuffer` – thread-safe (synchronized), slower.
+- `StringBuilder` – not thread-safe, faster. Prefer in single-threaded code.
+
+### Q30: What are `equals()` and `hashCode()` contracts?
+**A:**
+- If two objects are equal via `equals()`, they **must** have the same `hashCode()`.
+- If two objects have the same `hashCode()`, they are NOT necessarily equal.
+- Always override both together.
+
+---
+
+## 🔵 ADVANCED LEVEL
+
+### Q31: Explain Java Memory Model (JMM)
+**A:** Defines how threads interact through memory. Key rules:
+- Each thread has its own stack (local variables, method calls)
+- Heap is shared across threads (objects, static variables)
+- `happens-before` relationship: `synchronized`, `volatile`, `final` establish ordering guarantees
+- Visibility: changes by one thread are visible to another only if properly synchronized
+
+### Q32: How does Garbage Collection work?
+**A:** Automatic memory management. JVM identifies and removes unreachable objects.
+
+**Generational GC:**
+- **Young Generation** (Eden + S0 + S1) – new objects. Minor GC.
+- **Old Generation** – long-lived objects. Major GC.
+- **Metaspace** – class metadata (replaced PermGen in Java 8)
+
+**Common GC Algorithms:**
+| GC              | Description                       | Use Case                    |
+|-----------------|-----------------------------------|-----------------------------|
+| Serial GC       | Single thread, stop-the-world     | Small apps, single-core     |
+| Parallel GC     | Multi-thread GC                   | High throughput apps        |
+| G1 GC (default) | Region-based, low pause           | Large heaps, balanced       |
+| ZGC             | Ultra-low latency (<10ms)         | Very large heaps            |
+| Shenandoah      | Concurrent compaction             | Low-pause apps              |
+
+### Q33: What is the difference between `strong`, `soft`, `weak`, and `phantom` references?
+**A:**
+| Type     | GC behavior                                      | Use case                    |
+|----------|--------------------------------------------------|-----------------------------|
+| Strong   | Never collected while reachable                  | Normal objects              |
+| Soft     | Collected only if memory is low                  | Memory-sensitive caches     |
+| Weak     | Collected on next GC if no strong refs           | `WeakHashMap`, canonical maps|
+| Phantom  | Object already finalized, not reclaimable via ref| Pre-mortem cleanup          |
+
+### Q34: What is a classloader and how does it work?
+**A:** Loads `.class` files into JVM. Three main classloaders follow **Parent Delegation Model**:
+1. **Bootstrap** – core JDK classes (`rt.jar`)
+2. **Platform/Extension** – JDK extensions
+3. **Application/System** – classpath
+
+**Delegation:** A classloader first asks its parent to load. If parent can't, it tries itself. This prevents duplicate loading and security issues.
+
+### Q35: What is a thread deadlock and how to avoid it?
+**A:** Two or more threads waiting forever for locks held by each other.
+
+**Conditions for deadlock:** Mutual exclusion, hold and wait, no preemption, circular wait.
+
+**Prevention:**
+- Lock ordering (always acquire locks in same order)
+- Use `tryLock()` with timeout
+- Use higher-level concurrency utilities (e.g., `ReentrantLock`)
+- Minimize lock scope
+
+### Q36: What are the `java.util.concurrent` classes?
+**A:**
+- **Locks:** `ReentrantLock`, `ReadWriteLock`, `StampedLock`
+- **Executors:** `ExecutorService`, `ThreadPoolExecutor`, `ScheduledExecutorService`
+- **Synchronizers:** `CountDownLatch`, `CyclicBarrier`, `Semaphore`, `Phaser`
+- **Concurrent Collections:** `ConcurrentHashMap`, `CopyOnWriteArrayList`, `BlockingQueue`
+- **Atomics:** `AtomicInteger`, `AtomicReference`, `LongAdder`
+
+### Q37: Explain the Fork/Join Framework
+**A:** Parallel processing framework (Java 7+). Uses work-stealing algorithm.
+
+```java
+class SumTask extends RecursiveTask<Integer> {
+    int[] arr; int lo, hi;
+    SumTask(int[] a, int l, int h) { arr = a; lo = l; hi = h; }
+    protected Integer compute() {
+        if (hi - lo < 1000) return IntStream.range(lo, hi).map(i -> arr[i]).sum();
+        int mid = (lo + hi) / 2;
+        SumTask left = new SumTask(arr, lo, mid);
+        SumTask right = new SumTask(arr, mid, hi);
+        left.fork();
+        return right.compute() + left.join();
+    }
+}
+// ForkJoinPool.commonPool().invoke(new SumTask(arr, 0, arr.length));
+```
+
+### Q38: What is reflection and when would you use it?
+**A:** Ability to inspect and modify classes/fields/methods at runtime.
+
+```java
+Class<?> clazz = Class.forName("com.example.User");
+Method m = clazz.getDeclaredMethod("getName");
+m.setAccessible(true);
+String name = (String) m.invoke(user);
+```
+
+**Use cases:** Frameworks (Spring, Hibernate), serialization, testing, IDE debugging.
+
+**Downside:** Performance overhead, breaks encapsulation, security restrictions.
+
+### Q39: What are annotations and how to create custom ones?
+**A:** Metadata for code. Processed at compile/runtime via reflection or annotation processors.
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Loggable {
+    String level() default "INFO";
+}
+```
+
+### Q40: What is the difference between `Comparable` and `Comparator`?
+**A:**
+| Feature      | Comparable          | Comparator              |
+|-------------|--------------------|------------------------|
+| Package     | `java.lang`        | `java.util`            |
+| Method      | `compareTo(T o)`   | `compare(T o1, T o2)`  |
+| Sorting     | Natural ordering   | Custom ordering        |
+| Modification| In the class       | External               |
+
+```java
+class Person implements Comparable<Person> { ... }
+Comparator<Person> byAge = Comparator.comparingInt(Person::getAge);
+```
+
+### Q41: What is method reference?
+**A:** Shorthand for lambda. `ClassName::methodName`.
+
+```java
+list.forEach(System.out::println);
+list.stream().map(String::toUpperCase);
+```
+
+### Q42: What are CompletableFuture and how do they work?
+**A:** `CompletableFuture` extends `Future` with async composition (Java 8+).
+
+```java
+CompletableFuture.supplyAsync(() -> fetchUser())
+    .thenApply(User::getEmail)
+    .thenAccept(System.out::println)
+    .exceptionally(ex -> { log.error(ex); return null; });
+```
+
+### Q43: What is the Java Module System (JPMS)?
+**A:** Introduced in Java 9. Encapsulates code via modules.
+
+```java
+// module-info.java
+module com.example.myapp {
+    requires java.sql;
+    exports com.example.myapp.api;
+    provides com.example.myapp.spi.Service with com.example.myapp.impl.ServiceImpl;
+}
+```
+
+### Q44: Explain the `var` keyword (Java 10+)
+**A:** Local variable type inference. Compiler infers type from right side.
+
+```java
+var list = new ArrayList<String>();   // infers ArrayList<String>
+var stream = list.stream();          // infers Stream<String>
+```
+
+**Cannot use with:** fields, method parameters, return types, lambda without initializer.
+
+### Q45: What are Records? (Java 14+)
+**A:** Transparent carriers for immutable data. Auto-generates constructor, `equals()`, `hashCode()`, `toString()`.
+
+```java
+public record Point(int x, int y) {}
+// Usage: new Point(1, 2).x()
+```
+
+### Q46: What are Sealed Classes? (Java 17+)
+**A:** Restricts which classes can extend/implement them.
+
+```java
+public sealed class Shape permits Circle, Rectangle, Triangle { }
+final class Circle extends Shape { }
+final class Rectangle extends Shape { }
+```
+
+### Q47: What is the difference between `interrupt()`, `isInterrupted()`, and `interrupted()`?
+**A:**
+- `interrupt()` – sets the interrupt flag on a thread
+- `isInterrupted()` – checks flag (does not clear it)
+- `interrupted()` – checks flag (clears it, static method)
+
+### Q48: How does `ThreadLocal` work?
+**A:** Each thread has its own copy of a variable. Each thread accesses via `get()`/`set()` on the same `ThreadLocal` object but gets its own value, backed by `ThreadLocalMap` in the thread object.
+
+**Use cases:** Request-scoped data in web apps, `SimpleDateFormat` (not thread-safe).
+
+---
+
+## 🔴 EXPERT LEVEL
+
+### Q49: How does the JVM handle class loading and what is custom classloader?
+**A:** Custom classloaders can load classes from non-standard sources (network, encrypted, databases).
+
+```java
+public class MyClassLoader extends ClassLoader {
+    @Override
+    public Class<?> findClass(String name) throws ClassNotFoundException {
+        byte[] bytes = loadClassData(name);
+        return defineClass(name, bytes, 0, bytes.length);
+    }
+}
+```
+
+**Tomcat** creates separate classloaders per webapp to isolate applications.
+
+### Q50: What is bytecode instrumentation?
+**A:** Modifying Java bytecode at compile time or runtime. Used by:
+- **ByteBuddy / ASM / Javassist** – bytecode manipulation libraries
+- **AspectJ** – AOP
+- **Java Agents** (`premain`/`agentmain`) – instrument classes at load time
+
+```java
+// Java Agent premain
+public static void premain(String args, Instrumentation inst) {
+    inst.addTransformer((loader, className, classBeingRedefined,
+                         protectionDomain, classfileBuffer) -> {
+        // modify classfileBuffer
+        return modifiedBytes;
+    });
+}
+```
+
+### Q51: Explain JIT (Just-In-Time) Compilation and its optimizations
+**A:** JIT compiles frequently-executed bytecode to native machine code at runtime.
+
+**Key optimizations:**
+- **Inlining** – replaces method calls with method body
+- **Escape Analysis** – allocates objects on stack instead of heap if not escaping
+- **Lock Coarsening/Elision** – removes unnecessary locking
+- **Loop unrolling/peeling**
+- **Dead code elimination**
+- **Intrinsics** – replaces known methods with native CPU instructions
+
+**Tiered compilation:** Interpreter (T0) → C1 (T1-T3) → C2 (T4) for "hot" methods.
+
+### Q52: Explain JMM's `happens-before` rules in detail
+**A:** If A happens-before B, then A's effects are visible to B.
+
+**Rules:**
+1. **Program order** – within a thread, each action happens-before the next
+2. **Monitor lock** – unlock happens-before subsequent lock on same monitor
+3. **Volatile** – write to `volatile` field happens-before subsequent read of same field
+4. **Thread start** – `Thread.start()` happens-before any action in started thread
+5. **Thread join** – all actions in thread happen-before `Thread.join()` returns
+6. **Transitivity** – if A hb B and B hb C, then A hb C
+7. **Interruption** – `interrupt()` happens-before detection
+8. **Finalizer** – constructor end happens-before finalizer start
+9. **Synchronizer** – acquire on a synchronizer happens-before release
+
+### Q53: How does the G1 GC work internally?
+**A:** G1 divides heap into ~2048 regions (1MB–32MB).
+
+**Phases:**
+1. **Young GC** – evacuates Eden to Survivor/Old (stop-the-world, multi-threaded)
+2. **Concurrent Marking** – marks live objects across heap (concurrent)
+3. **Mixed GC** – evacuates selected Old regions (stop-the-world, multi-threaded)
+4. **Full GC** – fallback (serial stop-the-world)
+
+**Key parameters:**
+- `-XX:+UseG1GC`, `-XX:MaxGCPauseMillis=200`
+- `-XX:G1HeapRegionSize`, `-XX:G1NewSizePercent`
+- `-XX:G1MixedGCLiveThresholdPercent`
+
+### Q54: What is the difference between CMS, G1, ZGC, and Shenandoah?
+**A:**
+
+| GC         | Pause  | Throughput | Heap Size | Concurrent |
+|------------|--------|------------|-----------|------------|
+| CMS        | Short  | Good       | <4GB      | Partially  |
+| G1 (default)| Bounded| Good      | <100GB    | Partially  |
+| ZGC        | <1ms   | Moderate   | Up to 16TB| Fully      |
+| Shenandoah | <10ms  | Good       | Up to 16TB| Fully      |
+
+### Q55: Explain object header structure in HotSpot
+**A:** Every object has a header:
+- **Mark Word (8 bytes on 64-bit):** identity hashcode, GC age (4 bits), biased locking bits, lock state (thin/fat), and pointer to lock record
+- **Klass Pointer (4 or 8 bytes):** pointer to class metadata
+- **Padding** to align to 8-byte boundary
+
+**Lock states:** No lock → Biased → Thin-lock (CAS) → Fat-lock (OS mutex)
+
+### Q56: What is false sharing and how to mitigate it?
+**A:** When threads on different cores modify variables on the same cache line (64 bytes), causing cache invalidation overhead.
+
+**Mitigation:**
+- `@Contended` annotation (JDK 8+, requires `-XX:-RestrictContended`)
+- Padding fields manually (e.g., `long p1, p2, p3...`)
+- `LongAdder` instead of `AtomicLong` for high contention
+
+```java
+@jdk.internal.vm.annotation.Contended
+public class Counter {
+    volatile long value;
+}
+```
+
+### Q67: What are VarHandles? (Java 9+)
+**A:** `java.lang.invoke.VarHandle` provides a memory fence and atomic access to variables. More flexible than `Atomic*` classes.
+
+```java
+VarHandle handle = MethodHandles.lookup()
+    .findVarHandle(MyClass.class, "x", int.class);
+handle.set(this, 42);
+handle.compareAndSet(this, 42, 100);
+```
+
+### Q58: Explain `sun.misc.Unsafe` and its dangers
+**A:** Provides low-level operations:
+- Direct memory access (`allocateMemory`, `putLong`, `freeMemory`)
+- Object field offset (`objectFieldOffset`)
+- CAS operations
+- Park/unpark threads
+- Class loading without verification
+
+**Dangers:** Not part of public API, crashes JVM (segfault), no safety guarantees.
+
+### Q59: What are the different types of references in the JVM?
+**A:** (Expanded from Q33)
+
+**Reference processing pipeline:**
+1. SoftReferences cleared only if heap is full (based on LRU + age)
+2. WeakReferences cleared on every GC pass
+3. PhantomReferences must be explicitly cleared by application
+4. FinalReferences (for `finalize()`) – deprecated, don't rely on
+
+### Q60: Explain Project Loom / Virtual Threads (Java 19+)
+**A:** Lightweight user-mode threads managed by JVM, not OS.
+
+```java
+Thread.startVirtualThread(() -> {
+    System.out.println("Virtual thread running");
+});
+// Or via Executors.newVirtualThreadPerTaskExecutor();
+```
+
+- Mount/unmount from carrier OS threads
+- Blocking operations yield instead of blocking OS thread
+- Enables high concurrency (millions of threads)
+
+### Q61: Explain Structured Concurrency
+**A:** Treat groups of tasks as a single unit of work. If one subtask fails, others are cancelled.
+
+```java
+try (var scope = new StructuredTaskScope.ShutdownOnFailure()) {
+    Future<String> user = scope.fork(() -> fetchUser());
+    Future<Integer> orders = scope.fork(() -> fetchOrders());
+    scope.join();
+    scope.throwIfFailed();
+    return new Response(user.resultNow(), orders.resultNow());
+}
+```
+
+### Q62: What is the Java Memory Model's happens-before for `final` fields?
+**A:** A `final` field in a constructor is guaranteed to be visible to all threads after the constructor completes, provided `this` does not escape during construction.
+
+### Q63: How do record patterns and pattern matching work? (Java 16+)
+**A:** Deconstruct records in switch/instanceof:
+
+```java
+if (obj instanceof Point(int x, int y)) {
+    System.out.println(x + y);
+}
+
+String result = switch (obj) {
+    case Circle c -> "Circle: " + c.radius();
+    case Rectangle r -> "Rectangle: " + r.width() + "x" + r.height();
+    case null -> "null";
+    default -> "Unknown";
+};
+```
+
+### Q64: What is the Panama Project (Foreign Function & Memory API)?
+**A:** Replaces JNI with safe, efficient access to native libraries and off-heap memory.
+
+```java
+// Foreign Function API (Java 22+)
+Linker linker = Linker.nativeLinker();
+SymbolLookup lib = SymbolLookup.loaderLookup();
+MethodHandle strlen = linker.downcallHandle(
+    lib.find("strlen").get(),
+    FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS)
+);
+
+// Foreign Memory API
+MemorySegment segment = Arena.ofAuto().allocate(100);
+segment.set(ValueLayout.JAVA_INT, 0, 42);
+```
+
+### Q65: Explain Valhalla Project (Value Types / Inline Classes)
+**A:** (Preview in newer JDKs) Allows user-defined primitives that behave like `int` – no identity, no heap allocation, flat memory layout.
+
+```java
+// Hypothetical
+inline class Point {
+    private int x;
+    private int y;
+}
+// Stored as fields directly, not as references
+// Arrays become flat arrays of ints, not object arrays
+```
+
+---
+
+## 🧪 MIXED / CROSS-CUTTING TOPICS
+
+### Q66: What design patterns are commonly used in Java?
+**A:**
+| Pattern       | Java Example                               |
+|---------------|---------------------------------------------|
+| Singleton     | `Runtime.getRuntime()`, `Collections.emptyList()` |
+| Factory       | `Calendar.getInstance()`, Spring's `BeanFactory` |
+| Builder       | `StringBuilder`, `Stream.Builder`           |
+| Proxy         | Dynamic proxy (`java.lang.reflect.Proxy`)  |
+| Decorator     | `BufferedReader(FileReader)`                |
+| Observer      | `PropertyChangeListener`, Swing listeners   |
+| Strategy      | `Comparator` implementations                |
+| Template      | `AbstractList`, JdbcTemplate               |
+| Adapter       | `Arrays.asList()`, `InputStreamReader`      |
+
+### Q67: What are the SOLID principles?
+**A:**
+- **S**ingle Responsibility – one reason to change per class
+- **O**pen/Closed – open for extension, closed for modification
+- **L**iskov Substitution – subtype must be substitutable for base type
+- **I**nterface Segregation – many specific interfaces > one general
+- **D**ependency Inversion – depend on abstractions, not concretions
+
+### Q68: How does Spring manage transactions?
+**A:**
+- Declarative: `@Transactional` annotation
+- Uses AOP proxies to wrap methods
+- Propagation: REQUIRED, REQUIRES_NEW, MANDATORY, NEVER, SUPPORTS, NOT_SUPPORTED, NESTED
+- Isolation: READ_UNCOMMITTED, READ_COMMITTED, REPEATABLE_READ, SERIALIZABLE
+- Works with JPA, JDBC, Hibernate
+
+### Q69: How does Spring Boot auto-configuration work?
+**A:**
+- `@EnableAutoConfiguration` scans `META-INF/spring.factories` for `AutoConfiguration` classes
+- Conditional annotations (`@ConditionalOnClass`, `@ConditionalOnMissingBean`, etc.)
+- Creates beans only if dependencies are on classpath
+- Can be overridden by user-defined beans
+
+### Q70: What is Hibernate's N+1 query problem and how to fix it?
+**A:** When fetching parent entities triggers N additional queries for each child.
+
+**Fixes:**
+- `JOIN FETCH` in JPQL
+- `@EntityGraph` annotation
+- `@BatchSize(size = 10)`
+- Open Hibernate 2nd level cache
+
+```java
+// Fix: JOIN FETCH
+@Query("SELECT b FROM Blog b JOIN FETCH b.posts")
+List<Blog> findAllWithPosts();
+```
